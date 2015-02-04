@@ -1,5 +1,9 @@
 package it.jmangadownloader
 
+import it.jmangadowloader.gui.MainWindow
+
+import javax.swing.SwingUtilities
+
 public class App {
 
 	public static final String VERSION = "0.0.1"
@@ -16,6 +20,13 @@ public class App {
 			}
 		} else {
 			println "GUI"
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				void run() {
+					MainWindow frame = new MainWindow()
+
+				}
+			})
 		}
 
 	}
