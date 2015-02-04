@@ -1,10 +1,9 @@
 package it.jmangadowloader.backend.bean
 
 import groovy.transform.ToString
-import it.jmangadowloader.backend.engine.IChapterInfoContainer
 
 @ToString
-class ChapterInfoContainer implements IChapterInfoContainer{
+class ChapterInfoContainer{
 
     String url
     String name
@@ -16,18 +15,4 @@ class ChapterInfoContainer implements IChapterInfoContainer{
         this.title = title
     }
 
-    @Override
-    void setTitle(String title) {
-        this.title = title
-    }
-
-    @Override
-    void setName(String name) {
-        this.name = name
-    }
-
-    @Override
-    void setUrl(String url) {
-        this.url = url
-    }
 }
