@@ -8,8 +8,9 @@ repositories {
 }
 
 dependencies() {
-	compile 'org.springframework:spring-core:4.1.4.RELEASE'
+	compile 'org.springframework:spring-context:4.1.4.RELEASE'
 	compile 'org.codehaus.groovy:groovy-all:2.4.0'
+	compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
 }
 
 mainClassName = 'it.jmangadownloader.App'

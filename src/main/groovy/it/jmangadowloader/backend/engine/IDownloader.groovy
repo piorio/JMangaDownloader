@@ -5,6 +5,7 @@ package it.jmangadowloader.backend.engine
  */
 interface IDownloader {
     void setMainUrl(String url)
-    void setFOlder(String folder)
+    void setFolder(String folder)
     void extractAllChapters()
+    void setChaptersDownloader(IChapter chaptersDownloader)
 }
