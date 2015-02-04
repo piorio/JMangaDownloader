@@ -12,7 +12,6 @@ class MangaDownloaderDownloader implements IDownloader{
     String mainUrl
     String folder
     IChapter chaptersDownloader
-    def chapterInfoContainer = []
 
     @Override
     void setMainUrl(String url) {
@@ -27,11 +26,13 @@ class MangaDownloaderDownloader implements IDownloader{
     @Override
     void extractAllChapters() {
 
-        if(!mainUrl || !folder) {
+        if(!mainUrl || !folder || !chaptersDownloader) {
             throw new InvalidObjectStatus('MainUrl o folder is invalid')
         }
+
         def http = new HTTPBuilder( mainUrl )
         def html = http.get(path: '/manga/angel-heart')
+        def chapterInfoContainer = []
 
         html."**".findAll {it.@class.toString().contains("list")}.each {
             it.children()[1].UL.children().each {
@@ -50,10 +51,7 @@ class MangaDownloaderDownloader implements IDownloader{
             }
         }
 
-        chapterInfoContainer.each {
-            println "-->${it}"
-        }
-
+        chaptersDownloader.downloadAllPages(chapterInfoContainer)
     }
 
     @Override

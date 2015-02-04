@@ -1,8 +1,7 @@
 package it.jmangadowloader.backend.engine
 
+import it.jmangadowloader.backend.bean.ChapterInfoContainer
+
 public interface IChapter {
-	void downloadAllPages(String folder)
-	void setTitle(String title)
-	void setName(String name)
-	void setUrl(String Url)
+	void downloadAllPages(List<ChapterInfoContainer> chapters)
 }

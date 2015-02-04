@@ -1,35 +1,30 @@
 package it.jmangadowloader.backend.bean
 
 import groovy.transform.ToString
+import groovyx.gpars.GParsPool
 import it.jmangadowloader.backend.engine.IChapter
 
 @ToString
 public class MangaDownloaderChapter implements IChapter {
 
-	String url
-	String title
-	String name
-
-	public void setUrl(String url) {
-		this.url = url
-	}
-
-	public String getUrl() {
-		return url
-	}
 
 	@Override
-	void downloadAllPages(String folder) {
+	void downloadAllPages(List<ChapterInfoContainer> chapters) {
 
-	}
+		def one = (new Date()).toInstant()
+		GParsPool.withPool(4) {
+			chapters.eachParallel {
+				println "-->${it}"
+				def a = 2 * 2
+			}
+		}
+		def two = (new Date()).toInstant()
+		chapters.each {
+			println "-->${it}"
+			def a = 2 * 2
+		}
+		def three = (new Date()).toInstant()
 
-	@Override
-	void setTitle(String title) {
-		this.title = title
-	}
-
-	@Override
-	void setName(String name) {
-		this.name = name
+		println "${one} - ${two} - ${three}"
 	}
 }
