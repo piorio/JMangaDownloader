@@ -1,2 +1,6 @@
 build/**
 .gradle/**
+JMangaDownloader.iml
+JMangaDownloader.ipr
+JMangaDownloader.iws
+
