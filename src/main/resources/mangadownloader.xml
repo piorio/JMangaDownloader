@@ -4,13 +4,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
        <bean id="downloader" class="it.jmangadowloader.backend.bean.MangaDownloaderDownloader">
-              <property name="mainUrl" value="http://mangawindow.com/" />
-              <property name="chaptersDownloader" ref="chapterDownloader" />
-              <property name="chaptersInfoContainer" ref="chaptersList" />
-       </bean>
-
-       <bean id="chapterDownloader" class="it.jmangadowloader.backend.bean.MangaDownloaderChapter">
-
+            <property name="mainUrl" value="http://mangawindow.com/" />
+            <property name="chaptersInfoContainer" ref="chaptersList" />
+            <property name="configuration">
+                <map>
+                    <entry key="URL" value="http://mangawindow.com/" />
+                    <entry key="FOLDER" value="/tmp/hunter" />
+                </map>
+            </property>
        </bean>
 
        <bean id="chaptersList" class="java.util.ArrayList" >

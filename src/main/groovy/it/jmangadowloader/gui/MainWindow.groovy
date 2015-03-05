@@ -18,6 +18,19 @@ class MainWindow extends JFrame {
 
         ApplicationContext context = new ClassPathXmlApplicationContext('mangadownloader.xml')
         IDownloader downloader = context.getBean("downloader", IDownloader.class)
+
+        println "DOWNLOADER: ${downloader}"
+
+        def lista = downloader.getAllChapters('/manga/angel-heart')
+
+        println "\n\nAFTER\n\n"
+        lista.each {
+            println it
+        }
+
+        downloader.downloadSelectedChapters([1,4,8] as int[])
+
+        /*
         downloader.setFolder('/tmp')
 
         println "BEAN: ${downloader}"
@@ -30,6 +43,7 @@ class MainWindow extends JFrame {
         }
 
         downloader.downloadSomeChapters([1,4,8] as int[])
+        */
     }
 
 }

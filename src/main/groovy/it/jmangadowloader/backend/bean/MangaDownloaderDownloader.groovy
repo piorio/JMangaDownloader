@@ -1,7 +1,7 @@
 package it.jmangadowloader.backend.bean
 
 import groovy.transform.ToString
-import it.jmangadowloader.backend.engine.IChapter
+import groovyx.gpars.GParsPool
 import it.jmangadowloader.backend.engine.IDownloader
 import it.jmangadowloader.exception.InvalidObjectStatus
 import groovyx.net.http.HTTPBuilder
@@ -11,7 +11,6 @@ class MangaDownloaderDownloader implements IDownloader{
 
     String mainUrl
     String folder
-    IChapter chaptersDownloader
     List<ChapterInfoContainer> chaptersInfoContainer
 
     @Override
@@ -25,9 +24,9 @@ class MangaDownloaderDownloader implements IDownloader{
     }
 
     @Override
-    void extractAllChapters(String path) {
+    List<ChapterInfoContainer> getAllChapters(String path) {
 
-        if(!mainUrl || !folder || !chaptersDownloader) {
+        if(!mainUrl || !folder) {
             throw new InvalidObjectStatus('MainUrl o folder is invalid')
         }
 
@@ -51,18 +50,67 @@ class MangaDownloaderDownloader implements IDownloader{
             }
         }
         println "CHAPTERS -> ${chaptersInfoContainer.size()}"
-        chaptersDownloader.downloadAllPagesInformation(this.mainUrl, chaptersInfoContainer)
+        //chaptersDownloader.downloadAllPagesInformation(this.mainUrl, chaptersInfoContainer)
+        getChaptersInfo()
 
         println "DONE!!!"
+
+        return chaptersInfoContainer
     }
 
     @Override
-    void setChaptersDownloader(IChapter chaptersDownloader) {
-        this.chaptersDownloader = chaptersDownloader
+    void downloadSelectedChapters(int[] selected) {
+        if(selected) {
+            selected.each {
+                println "Want to download ${it}"
+                ChapterInfoContainer toDownload = chaptersInfoContainer.get(it)
+                println "ChapterInfo -> ${toDownload}"
+
+                String chapterBaseUrl = toDownload.imgLink[0..-6]
+                println "Base URL -> ${chapterBaseUrl}"
+                toDownload.imgNumber.each { img ->
+                    println "DOWNLOAD: ${chapterBaseUrl}/${it}.jpg"
+                }
+            }
+        }
     }
 
     @Override
-    void downloadSomeChapters(int[] selected) {
-        chaptersDownloader.downloadSelectedChapters(selected, chaptersInfoContainer)
+    public void setConfiguration(Map<String, String> parameters) {
+        if(parameters) {
+            mainUrl = parameters.get("URL")
+            folder = parameters.get("FOLDER")
+        } else {
+            println "ERROR for parameters invalid"
+        }
+    }
+
+    private void getChaptersInfo() {
+        GParsPool.withPool(4) {
+            chaptersInfoContainer.eachParallel { chapter ->
+                //println "-->${it}"
+                def http = new HTTPBuilder( mainUrl )
+                def internalLink = chapter.link
+                def html = http.get(path: internalLink)
+
+                html."**".findAll {it.@class.toString().contains("reload")}.each {
+                    def imgSpan = it.parent()
+                    def imgNumber = Integer.parseInt(imgSpan.EM.children()[0].toString()?.split('of ')[1])
+                    def imgTarget = imgSpan.EM.children()[0].@href.text()
+
+                    chapter.imgLink = imgTarget
+                    chapter.imgNumber = imgNumber
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "MangaDownloaderDownloader{" +
+                "mainUrl='" + mainUrl + '\'' +
+                ", folder='" + folder + '\'' +
+                ", chaptersInfoContainer=" + chaptersInfoContainer +
+                '}';
     }
 }
