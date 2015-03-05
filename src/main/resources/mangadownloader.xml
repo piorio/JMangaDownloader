@@ -3,12 +3,16 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+        <bean id="globalproperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+            <property name="location" value="classpath:global.properties" />
+        </bean>
+
        <bean id="downloader" class="it.jmangadowloader.backend.bean.MangaDownloaderDownloader">
             <property name="chaptersInfoContainer" ref="chaptersList" />
             <property name="configuration">
                 <map>
                     <entry key="URL" value="http://mangawindow.com/" />
-                    <entry key="FOLDER" value="/tmp/hunter" />
+                    <entry key="FOLDER" value="${default.folder}" />
                 </map>
             </property>
        </bean>

@@ -28,7 +28,7 @@ class MainWindow extends JFrame {
             println it
         }
 
-        downloader.downloadSelectedChapters([1,4,8] as int[])
+        downloader.downloadSelectedChapters([1] as int[])
 
     }
 

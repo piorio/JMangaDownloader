@@ -1,10 +1,12 @@
 package it.jmangadowloader.backend.bean
-
 import groovy.transform.ToString
 import groovyx.gpars.GParsPool
+import groovyx.net.http.HTTPBuilder
 import it.jmangadowloader.backend.engine.IDownloader
 import it.jmangadowloader.exception.InvalidObjectStatus
-import groovyx.net.http.HTTPBuilder
+
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 @ToString
 class MangaDownloaderDownloader implements IDownloader{
@@ -57,11 +59,19 @@ class MangaDownloaderDownloader implements IDownloader{
                     ChapterInfoContainer toDownload = chaptersInfoContainer.get(it)
                     println "ChapterInfo -> ${toDownload}"
 
+                    String absolutePath = "${folder}/${toDownload.title}"
+                    createFolder(absolutePath)
+
                     String chapterBaseUrl = toDownload.imgLink[0..-6]
                     println "Base URL -> ${chapterBaseUrl}"
-                    (0..toDownload.imgNumber).each { imgindex ->
+                    (1..toDownload.imgNumber).each { imgindex ->
                         println "DOWNLOAD: ${chapterBaseUrl}${imgindex}.jpg"
+                        def out = new BufferedOutputStream(new FileOutputStream("${absolutePath}/${imgindex}.jpg"))
+                        out << new URL("${chapterBaseUrl}${imgindex}.jpg").openStream()
+                        out.close()
                     }
+
+                    createCbr("${absolutePath}/${toDownload.title}", absolutePath)
                 }
             }
         }
@@ -95,6 +105,51 @@ class MangaDownloaderDownloader implements IDownloader{
                 }
             }
         }
+    }
+
+    private void createFolder(String absolutePath) {
+        println "\nCREATE FOLDER -> ${absolutePath}\n"
+        new File(absolutePath).mkdirs()
+    }
+
+    private void createCbr2(String filename, String absolutePath) {
+        ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(filename))
+        new File(absolutePath).eachFile() { file ->
+            zipFile.putNextEntry(new ZipEntry(file.getName()))
+            def buffer = new byte[file.getTotalSpace()]
+            file.withInputStream { i ->
+                def l = i.read(buffer)
+                // check wether the file is empty
+                if (l > 0) {
+                    zipFile.write(buffer, 0, l)
+                }
+            }
+            zipFile.closeEntry()
+        }
+        zipFile.close()
+    }
+
+    private void createCbr(String filename, String absolutePath) {
+        def files = []
+        new File(absolutePath).eachFile() { file ->
+            files.add(file.absolutePath)
+            println "ADDED: ${file.absolutePath}"
+        }
+
+        println "TEST--"
+        files.each {println it}
+
+        def ant = new AntBuilder()
+        def zip = new File("${absolutePath}.zip")
+        ant.zip(destFile: zip.getAbsolutePath(), basedir: absolutePath, includes: files.join(' '))
+    }
+
+    String getFolder() {
+        return folder
+    }
+
+    void setFolder(String folder) {
+        this.folder = folder
     }
 
     @Override
