@@ -30,20 +30,6 @@ class MainWindow extends JFrame {
 
         downloader.downloadSelectedChapters([1,4,8] as int[])
 
-        /*
-        downloader.setFolder('/tmp')
-
-        println "BEAN: ${downloader}"
-
-        downloader.extractAllChapters('/manga/angel-heart')
-
-        println "\n\nAFTER\n\n"
-        downloader.chaptersInfoContainer.each {
-            println it
-        }
-
-        downloader.downloadSomeChapters([1,4,8] as int[])
-        */
     }
 
 }

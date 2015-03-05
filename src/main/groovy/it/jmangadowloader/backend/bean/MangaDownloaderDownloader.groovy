@@ -14,16 +14,6 @@ class MangaDownloaderDownloader implements IDownloader{
     List<ChapterInfoContainer> chaptersInfoContainer
 
     @Override
-    void setMainUrl(String url) {
-        this.mainUrl = url
-    }
-
-    @Override
-    void setFolder(String folder) {
-        this.folder = folder
-    }
-
-    @Override
     List<ChapterInfoContainer> getAllChapters(String path) {
 
         if(!mainUrl || !folder) {
@@ -61,15 +51,17 @@ class MangaDownloaderDownloader implements IDownloader{
     @Override
     void downloadSelectedChapters(int[] selected) {
         if(selected) {
-            selected.each {
-                println "Want to download ${it}"
-                ChapterInfoContainer toDownload = chaptersInfoContainer.get(it)
-                println "ChapterInfo -> ${toDownload}"
+            GParsPool.withPool(4) {
+                selected.eachParallel {
+                    println "Want to download ${it}"
+                    ChapterInfoContainer toDownload = chaptersInfoContainer.get(it)
+                    println "ChapterInfo -> ${toDownload}"
 
-                String chapterBaseUrl = toDownload.imgLink[0..-6]
-                println "Base URL -> ${chapterBaseUrl}"
-                toDownload.imgNumber.each { img ->
-                    println "DOWNLOAD: ${chapterBaseUrl}/${it}.jpg"
+                    String chapterBaseUrl = toDownload.imgLink[0..-6]
+                    println "Base URL -> ${chapterBaseUrl}"
+                    (0..toDownload.imgNumber).each { imgindex ->
+                        println "DOWNLOAD: ${chapterBaseUrl}${imgindex}.jpg"
+                    }
                 }
             }
         }
