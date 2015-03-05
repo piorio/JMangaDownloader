@@ -22,7 +22,14 @@ class MainWindow extends JFrame {
 
         println "BEAN: ${downloader}"
 
-        downloader.extractAllChapters()
+        downloader.extractAllChapters('/manga/angel-heart')
+
+        println "\n\nAFTER\n\n"
+        downloader.chaptersInfoContainer.each {
+            println it
+        }
+
+        downloader.downloadSomeChapters([1,4,8] as int[])
     }
 
 }

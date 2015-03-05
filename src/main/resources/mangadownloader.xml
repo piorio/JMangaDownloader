@@ -6,9 +6,14 @@
        <bean id="downloader" class="it.jmangadowloader.backend.bean.MangaDownloaderDownloader">
               <property name="mainUrl" value="http://mangawindow.com/" />
               <property name="chaptersDownloader" ref="chapterDownloader" />
+              <property name="chaptersInfoContainer" ref="chaptersList" />
        </bean>
 
        <bean id="chapterDownloader" class="it.jmangadowloader.backend.bean.MangaDownloaderChapter">
+
+       </bean>
+
+       <bean id="chaptersList" class="java.util.ArrayList" >
 
        </bean>
 

@@ -12,6 +12,7 @@ class MangaDownloaderDownloader implements IDownloader{
     String mainUrl
     String folder
     IChapter chaptersDownloader
+    List<ChapterInfoContainer> chaptersInfoContainer
 
     @Override
     void setMainUrl(String url) {
@@ -24,15 +25,14 @@ class MangaDownloaderDownloader implements IDownloader{
     }
 
     @Override
-    void extractAllChapters() {
+    void extractAllChapters(String path) {
 
         if(!mainUrl || !folder || !chaptersDownloader) {
             throw new InvalidObjectStatus('MainUrl o folder is invalid')
         }
 
         def http = new HTTPBuilder( mainUrl )
-        def html = http.get(path: '/manga/angel-heart')
-        def chapterInfoContainer = []
+        def html = http.get(path: path)
 
         html."**".findAll {it.@class.toString().contains("list")}.each {
             it.children()[1].UL.children().each {
@@ -46,16 +46,23 @@ class MangaDownloaderDownloader implements IDownloader{
                 }
 
                 def name = link?.split('/')[3]
-                def chapter = new ChapterInfoContainer("${this.mainUrl}${link}", name,  title)
-                chapterInfoContainer.add(chapter)
+                def chapter = new ChapterInfoContainer(link, name,  title)
+                chaptersInfoContainer.add(chapter)
             }
         }
+        println "CHAPTERS -> ${chaptersInfoContainer.size()}"
+        chaptersDownloader.downloadAllPagesInformation(this.mainUrl, chaptersInfoContainer)
 
-        chaptersDownloader.downloadAllPages(chapterInfoContainer)
+        println "DONE!!!"
     }
 
     @Override
     void setChaptersDownloader(IChapter chaptersDownloader) {
         this.chaptersDownloader = chaptersDownloader
+    }
+
+    @Override
+    void downloadSomeChapters(int[] selected) {
+        chaptersDownloader.downloadSelectedChapters(selected, chaptersInfoContainer)
     }
 }
